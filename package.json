@@ -1,0 +1,14 @@
+{
+  "name": "gozen1ji-daidasso-online",
+  "version": "1.0.0",
+  "description": "午前1時の大脱走 (1 A.M. Jailbreak) をスマホでオンライン対戦するWebアプリ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/sim.js && node test/ws.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0d1226">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>午前1時の大脱走 オンライン</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- トップ画面 -->
+  <section id="home" class="screen">
+    <div class="moon"></div>
+    <h1 class="title"><small>1 A.M. JAILBREAK</small>午前1時の<br>大脱走</h1>
+    <p class="sub">看守が眠る午前1時。手札を出し切って脱走せよ！</p>
+    <div class="panel">
+      <label>あなたの名前<input id="nameInput" maxlength="12" placeholder="例：ねず"></label>
+      <button id="createBtn" class="btn primary">部屋をつくる</button>
+      <div class="or">または</div>
+      <div class="row">
+        <input id="codeInput" maxlength="4" placeholder="部屋コード" autocapitalize="characters">
+        <button id="joinBtn" class="btn">参加</button>
+      </div>
+    </div>
+    <details class="rules">
+      <summary>ルール（かんたん）</summary>
+      <ul>
+        <li>カードは数字1〜8と<b>★オールマイティ</b>（好きな数字として使える）。</li>
+        <li>3ラウンド制。各ラウンド手札が配られ、場に5枚の<b>ディスプレイ</b>が並ぶ。</li>
+        <li>場が空なら手札から<b>1〜3枚</b>を<b>ラン（連番）</b>か<b>セット（同じ数字）</b>で出す。</li>
+        <li>場札があるときは、まず場札に手札から<b>1枚だけ付け足せる</b>（ラン/セットを崩さないこと）。その後、直前の場札と<b>同じ枚数か±1枚</b>で出す。数字の大小は関係なし！</li>
+        <li>出したら手番の最後にディスプレイから<b>1〜2枚</b>手札に取る（出し切ったときは不要）。</li>
+        <li>出せない・出したくないときは<b>パス</b>。場札が流れ、次の人が自由に1〜3枚出す。</li>
+        <li>手札を出し切ったら脱走成功（和了り）。規定人数が和了るとラウンド終了、残った手札がマイナス点。</li>
+        <li>3ラウンド合計のマイナス点が最も少ない人の勝ち。</li>
+      </ul>
+    </details>
+  </section>
+
+  <!-- ロビー -->
+  <section id="lobby" class="screen hidden">
+    <h2>待合室</h2>
+    <div class="codeBox">部屋コード<b id="lobbyCode">----</b>
+      <button id="shareBtn" class="btn small">招待リンクを共有</button>
+    </div>
+    <ul id="lobbyPlayers" class="plist"></ul>
+    <div id="settingsBox" class="panel">
+      <h3>設定 <span id="settingsNote" class="muted"></span></h3>
+      <div class="grid">
+        <label>ラウンド数<select id="sRounds"></select></label>
+        <label>終了人数<select id="sFinish"><option value="0">人数−1人</option><option value="1">1人</option><option value="2">2人</option><option value="3">3人</option></select></label>
+        <label>得点方式<select id="sScoring"><option value="count">残り1枚=1点</option><option value="rank">数字の合計(★=5)</option></select></label>
+        <label>パス時に取る枚数<select id="sPassDraw"><option value="0">0枚</option><option value="1">1枚</option><option value="2">2枚</option></select></label>
+        <label>手札枚数(2人)<select id="sH2"></select></label>
+        <label>手札枚数(3人)<select id="sH3"></select></label>
+        <label>手札枚数(4人)<select id="sH4"></select></label>
+        <label>手札枚数(5人)<select id="sH5"></select></label>
+      </div>
+    </div>
+    <button id="startBtn" class="btn primary">ゲーム開始</button>
+    <p id="waitMsg" class="muted center"></p>
+    <button id="leaveBtn" class="btn ghost">退室</button>
+  </section>
+
+  <!-- ゲーム画面 -->
+  <section id="game" class="screen hidden">
+    <header class="topbar">
+      <span id="roundInfo">R1</span>
+      <span id="pileInfo"></span>
+      <button id="logBtn" class="btn small ghost">ログ</button>
+    </header>
+    <div id="opponents" class="opponents"></div>
+
+    <div class="table">
+      <div class="tableLabel">場札 <span id="tableInfo" class="muted"></span></div>
+      <div id="trickPrev" class="trickPrev"></div>
+      <div id="trick" class="trick"></div>
+    </div>
+
+    <div class="displayArea">
+      <div class="tableLabel">ディスプレイ <span id="displayInfo" class="muted"></span></div>
+      <div id="display" class="cards display"></div>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div class="handArea">
+      <div class="actions">
+        <button id="addBtn" class="btn">場に付け足す</button>
+        <button id="playBtn" class="btn primary">出す</button>
+        <button id="passBtn" class="btn warn">パス</button>
+        <button id="takeBtn" class="btn primary hidden">取る</button>
+      </div>
+      <div id="hand" class="cards hand"></div>
+    </div>
+  </section>
+
+  <!-- ラウンド結果 -->
+  <div id="resultModal" class="modal hidden">
+    <div class="modalBody">
+      <h2 id="resultTitle">ラウンド終了</h2>
+      <table id="resultTable" class="score"></table>
+      <button id="nextBtn" class="btn primary">次のラウンドへ</button>
+      <button id="againBtn" class="btn primary hidden">もう一度遊ぶ</button>
+      <button id="toLobbyBtn" class="btn ghost hidden">待合室へ戻る</button>
+      <p id="resultWait" class="muted center"></p>
+    </div>
+  </div>
+
+  <!-- ログ -->
+  <div id="logModal" class="modal hidden">
+    <div class="modalBody">
+      <h2>ログ</h2>
+      <ol id="logList" class="log"></ol>
+      <button id="logClose" class="btn">閉じる</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="conn" class="conn hidden">再接続中…</div>
+</div>
+<script src="/rules.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
